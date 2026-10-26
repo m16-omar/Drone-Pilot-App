@@ -1,0 +1,11 @@
+class: FlightSession
+fields:
+  sessionId: String
+  droneId: String
+  startTime: DateTime
+  endTime: DateTime?
+  maxAltitudeMeters: double
+  maxSpeedMps: double
+  durationSeconds: int?
+  status: String
+  notes: String?

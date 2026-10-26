@@ -1,0 +1,8 @@
+class: DroneDevice
+fields:
+  deviceId: String
+  name: String
+  model: String
+  firmwareVersion: String
+  capabilities: List<String>
+  registeredAt: DateTime

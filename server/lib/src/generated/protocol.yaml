@@ -1,0 +1,21 @@
+emailIdp:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+jwtRefresh:
+  - refreshAccessToken:
+drone:
+  - listDrones:
+  - registerDrone:
+flightSession:
+  - listSessions:
+  - recordSession:
+greeting:
+  - hello:
+system:
+  - status:

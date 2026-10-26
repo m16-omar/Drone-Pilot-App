@@ -1,0 +1,6 @@
+class: SystemStatus
+fields:
+  service: String
+  status: String
+  version: String
+  mode: String
