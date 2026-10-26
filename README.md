@@ -34,17 +34,27 @@ python3 tools/drone_simulator.py
 *Listens on `0.0.0.0:8765` for incoming UDP datagrams and broadcasts telemetry at 1 Hz once connected.*
 
 ### 2. Run the Flutter Pilot App
+Ensure you are in the `app` directory:
 ```bash
 cd app
-flutter run -d macos # or -d android / -d chrome
+```
+
+Launch on your target device:
+```bash
+# On iOS Simulator (e.g. iPhone)
+flutter run -d "iPhone 18 Pro"
+
+# On macOS Desktop
+flutter run -d macos
+
+# On Web Browser
+flutter run -d chrome
 ```
 
 ### 3. Run the Serverpod Cloud Backend
 ```bash
 cd server
 dart bin/main.dart
-# Or full stack with Docker:
-# docker compose up --build --detach && dart bin/main.dart --apply-migrations
 ```
 
 ---
