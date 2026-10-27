@@ -1,5 +1,5 @@
 name: drone_control_pilot_flutter
-description: A new Flutter project with Serverpod.
+description: Professional drone pilot telemetry, 3D avionics flight arena, and AI flight control assistant.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
