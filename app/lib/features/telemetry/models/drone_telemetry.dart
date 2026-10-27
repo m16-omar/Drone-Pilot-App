@@ -31,6 +31,40 @@ class DroneTelemetry {
   final int linkQualityPercent;
   final String flightMode;
 
+  DroneTelemetry copyWith({
+    int? version,
+    int? sequence,
+    String? deviceId,
+    int? timestampMs,
+    bool? isArmed,
+    double? batteryPercent,
+    double? rollDeg,
+    double? pitchDeg,
+    double? yawDeg,
+    double? altitudeMeters,
+    double? speedMps,
+    bool? hasGpsFix,
+    int? linkQualityPercent,
+    String? flightMode,
+  }) {
+    return DroneTelemetry(
+      version: version ?? this.version,
+      sequence: sequence ?? this.sequence,
+      deviceId: deviceId ?? this.deviceId,
+      timestampMs: timestampMs ?? this.timestampMs,
+      isArmed: isArmed ?? this.isArmed,
+      batteryPercent: batteryPercent ?? this.batteryPercent,
+      rollDeg: rollDeg ?? this.rollDeg,
+      pitchDeg: pitchDeg ?? this.pitchDeg,
+      yawDeg: yawDeg ?? this.yawDeg,
+      altitudeMeters: altitudeMeters ?? this.altitudeMeters,
+      speedMps: speedMps ?? this.speedMps,
+      hasGpsFix: hasGpsFix ?? this.hasGpsFix,
+      linkQualityPercent: linkQualityPercent ?? this.linkQualityPercent,
+      flightMode: flightMode ?? this.flightMode,
+    );
+  }
+
   factory DroneTelemetry.fromJson(Map<String, dynamic> json) {
     return DroneTelemetry(
       version: (json['v'] as num?)?.toInt() ?? 1,

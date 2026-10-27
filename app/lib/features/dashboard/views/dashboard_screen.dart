@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/tactile_components.dart';
+import '../../ai_assistant/views/ai_assistant_sheet.dart';
 import '../../drone_connection/services/udp_drone_link.dart';
 import '../../flight_3d/widgets/drone_3d_preview_card.dart';
 import '../../telemetry/models/drone_telemetry.dart';
@@ -20,23 +23,22 @@ class DashboardScreen extends ConsumerWidget {
 
     final linkState = linkStateAsync.value ?? DroneLinkState.disconnected;
     final telemetry = telemetryAsync.value ?? DroneTelemetry.initial;
+    final isDark = context.isDark;
 
     return Scaffold(
-      backgroundColor: AppColors.jetBlack,
       appBar: AppBar(
-        backgroundColor: AppColors.cockpitSlate,
         elevation: 0,
         title: const Row(
           children: [
-            Icon(Icons.flight_takeoff, color: AppColors.avionicsBlue),
+            Icon(Icons.flight_takeoff, color: AppColors.avionicsBlue, size: 20),
             SizedBox(width: 8),
             Expanded(
               child: Text(
                 'DRONE CONTROL PILOT',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1.1,
-                  fontSize: 15,
+                  letterSpacing: 1.0,
+                  fontSize: 14,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -44,6 +46,21 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: isDark ? 'Switch to Light Mood' : 'Switch to Dark Mood',
+            icon: Icon(
+              isDark ? Icons.light_mode : Icons.dark_mode,
+              color: isDark ? const Color(0xFFFACC15) : const Color(0xFF0284C7),
+            ),
+            onPressed: () {
+              ref.read(themeModeProvider.notifier).toggleTheme();
+            },
+          ),
+          IconButton(
+            tooltip: 'AI Flight Control Assistant',
+            icon: const Icon(Icons.auto_awesome, color: Color(0xFF38BDF8)),
+            onPressed: () => AiAssistantSheet.show(context),
+          ),
           IconButton(
             tooltip: 'Configure Drone IP ($currentHost)',
             icon: const Icon(Icons.settings_ethernet),
@@ -59,6 +76,19 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: const Color(0xFF0284C7),
+        icon: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+        label: const Text(
+          'AI CO-PILOT',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.8,
+            color: Colors.white,
+          ),
+        ),
+        onPressed: () => AiAssistantSheet.show(context),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -71,11 +101,88 @@ class DashboardScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           _build3DLaunchButton(context),
           const SizedBox(height: 16),
-          _buildPrimaryInstruments(telemetry),
+          _buildAiAssistantCard(context),
           const SizedBox(height: 16),
-          _buildAttitudeCard(telemetry),
+          _buildPrimaryInstruments(context, telemetry),
+          const SizedBox(height: 16),
+          _buildAttitudeCard(context, telemetry),
           const SizedBox(height: 16),
           _buildQuickActionButtons(context, ref, telemetry, linkState),
+          const SizedBox(height: 48), // Padding for FAB
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAiAssistantCard(BuildContext context) {
+    return TactileCard(
+      padding: const EdgeInsets.all(14),
+      color: context.cardBg,
+      borderColor: const Color(0xFF38BDF8).withValues(alpha: 0.4),
+      onTap: () => AiAssistantSheet.show(context),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const RadialGradient(
+                colors: [Color(0xFF38BDF8), Color(0xFF0284C7), Color(0xFF1E293B)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'AI FLIGHT CO-PILOT',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        letterSpacing: 0.9,
+                        color: context.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF38BDF8).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: const Text(
+                        'READY',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF38BDF8),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Autonomous commands, diagnostics & setpoints',
+                  style: TextStyle(fontSize: 11, color: context.textMuted),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios, color: Color(0xFF38BDF8), size: 14),
         ],
       ),
     );
@@ -167,7 +274,7 @@ class DashboardScreen extends ConsumerWidget {
 
     return TactileCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: AppColors.cockpitSlate,
+      color: context.cardBg,
       borderColor: statusColor.withValues(alpha: 0.5),
       child: Row(
         children: [
@@ -188,7 +295,7 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 Text(
                   'Device: ${telemetry.deviceId} · Mode: ${telemetry.flightMode}',
-                  style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                  style: TextStyle(color: context.textMuted, fontSize: 12),
                 ),
               ],
             ),
@@ -218,7 +325,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPrimaryInstruments(DroneTelemetry telemetry) {
+  Widget _buildPrimaryInstruments(BuildContext context, DroneTelemetry telemetry) {
     Color batteryColor;
     if (telemetry.batteryPercent > 30) {
       batteryColor = AppColors.telemetryGreen;
@@ -255,7 +362,7 @@ class DashboardScreen extends ConsumerWidget {
           value: '${telemetry.speedMps.toStringAsFixed(1)} m/s',
           subtext: 'Ground Velocity',
           icon: Icons.speed,
-          accentColor: Colors.cyanAccent,
+          accentColor: Colors.cyan,
         ),
         _InstrumentTile(
           label: 'GPS NAVIGATION',
@@ -268,27 +375,37 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAttitudeCard(DroneTelemetry telemetry) {
+  Widget _buildAttitudeCard(BuildContext context, DroneTelemetry telemetry) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cockpitSlate,
-        borderRadius: BorderRadius.circular(12),
+        color: context.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.cardBorder, width: 1.2),
+        boxShadow: context.isDark
+            ? null
+            : const [
+                BoxShadow(
+                  color: Color(0x0C0F172A),
+                  blurRadius: 16,
+                  offset: Offset(0, 6),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.explore, color: AppColors.avionicsBlue, size: 18),
-              SizedBox(width: 8),
+              const Icon(Icons.explore, color: AppColors.avionicsBlue, size: 18),
+              const SizedBox(width: 8),
               Text(
                 'ATTITUDE ESTIMATION',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                   letterSpacing: 0.8,
-                  color: Colors.white,
+                  color: context.textPrimary,
                 ),
               ),
             ],
@@ -300,17 +417,17 @@ class DashboardScreen extends ConsumerWidget {
               _AttitudeMetric(
                 label: 'ROLL',
                 value: '${telemetry.rollDeg.toStringAsFixed(1)}°',
-                color: Colors.lightBlueAccent,
+                color: Colors.lightBlue,
               ),
               _AttitudeMetric(
                 label: 'PITCH',
                 value: '${telemetry.pitchDeg.toStringAsFixed(1)}°',
-                color: Colors.orangeAccent,
+                color: Colors.orange,
               ),
               _AttitudeMetric(
                 label: 'YAW / HEADING',
                 value: '${telemetry.yawDeg.toStringAsFixed(1)}°',
-                color: Colors.purpleAccent,
+                color: Colors.purple,
               ),
             ],
           ),
@@ -350,8 +467,8 @@ class DashboardScreen extends ConsumerWidget {
             Expanded(
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: AppColors.textMuted),
+                  foregroundColor: context.textPrimary,
+                  side: BorderSide(color: context.cardBorder),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 icon: const Icon(Icons.cloud_sync, size: 18),
@@ -363,8 +480,8 @@ class DashboardScreen extends ConsumerWidget {
             Expanded(
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: AppColors.textMuted),
+                  foregroundColor: context.textPrimary,
+                  side: BorderSide(color: context.cardBorder),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 icon: const Icon(Icons.monitor_heart, size: 18),
@@ -383,22 +500,23 @@ class DashboardScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.cockpitSlate,
-        title: const Text('Drone UDP Endpoint IP'),
+        backgroundColor: context.cardBg,
+        title: Text('Drone UDP Endpoint IP', style: TextStyle(color: context.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Configure the IP address of the drone or simulator:\n'
               '• 127.0.0.1 (macOS Simulator)\n'
               '• 10.0.2.2 (Android Emulator)\n'
               '• 192.168.4.1 (ESP32 SoftAP default)',
-              style: TextStyle(fontSize: 12, color: AppColors.textMuted),
+              style: TextStyle(fontSize: 12, color: context.textMuted),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
+              style: TextStyle(color: context.textPrimary),
               decoration: const InputDecoration(
                 labelText: 'Host IP Address',
                 border: OutlineInputBorder(),
@@ -445,8 +563,18 @@ class _InstrumentTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.cockpitSlate,
-        borderRadius: BorderRadius.circular(10),
+        color: context.cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.cardBorder, width: 1.2),
+        boxShadow: context.isDark
+            ? null
+            : const [
+                BoxShadow(
+                  color: Color(0x080F172A),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,8 +585,8 @@ class _InstrumentTile extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  color: AppColors.textMuted,
+                style: TextStyle(
+                  color: context.textMuted,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
@@ -476,7 +604,7 @@ class _InstrumentTile extends StatelessWidget {
           ),
           Text(
             subtext,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+            style: TextStyle(color: context.textMuted, fontSize: 10),
           ),
         ],
       ),
@@ -501,7 +629,7 @@ class _AttitudeMetric extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 11, color: context.textMuted),
         ),
         const SizedBox(height: 4),
         Text(

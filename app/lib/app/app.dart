@@ -1,33 +1,24 @@
 import 'package:flutter/material.dart';
-import '../core/constants/app_colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../core/theme/app_theme.dart';
+import '../core/theme/theme_provider.dart';
 import 'router.dart';
 
-class DronePilotApp extends StatelessWidget {
+class DronePilotApp extends ConsumerWidget {
   const DronePilotApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp.router(
       title: 'Drone Control Pilot',
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: AppColors.jetBlack,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.avionicsBlue,
-          brightness: Brightness.dark,
-        ),
-        cardTheme: const CardThemeData(
-          color: AppColors.cockpitSlate,
-          elevation: 2,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.cockpitSlate,
-          elevation: 0,
-        ),
-      ),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: themeMode,
     );
   }
 }

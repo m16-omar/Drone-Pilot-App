@@ -37,6 +37,7 @@ class Flight3DPainter extends CustomPainter {
     if (size.width <= 0 || size.height <= 0) return;
 
     // 1. Build Ground Polygons
+    final isLightPad = lighting == Lighting.day;
     final ground = drawEnvironment
         ? Drone3DGeometry.buildEnvironmentGround(
             droneX: droneX,
@@ -46,13 +47,13 @@ class Flight3DPainter extends CustomPainter {
         : <GroundPoly>[
             GroundPoly.circle(
               0, 0, 1.2,
-              const Color(0xFF1E293B),
+              isLightPad ? const Color(0xFFCBD5E1) : const Color(0xFF1E293B),
               y: 0,
               sides: 16,
             ),
             ...GroundPoly.ring(
               0, 0, 1.02, 1.12,
-              const Color(0xFF38BDF8),
+              isLightPad ? const Color(0xFF0284C7) : const Color(0xFF38BDF8),
               y: 0.01,
               sides: 16,
             ),

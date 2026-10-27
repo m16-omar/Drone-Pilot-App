@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/tactile_components.dart';
+import '../../ai_assistant/views/ai_assistant_sheet.dart';
 import '../../drone_connection/services/udp_drone_link.dart';
 import '../../telemetry/models/drone_telemetry.dart';
 import '../../telemetry/providers/drone_providers.dart';
@@ -291,6 +292,28 @@ class _Flight3DScreenState extends ConsumerState<Flight3DScreen>
                           _buildModeChip('FPV', CameraMode.fpv),
                           _buildModeChip('ORBIT', CameraMode.orbit),
                         ],
+                      ),
+                    ),
+                    // AI Assistant Co-pilot Button
+                    GlassHudPanel(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      borderRadius: 99,
+                      child: InkWell(
+                        onTap: () => AiAssistantSheet.show(context),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.auto_awesome, color: Color(0xFF38BDF8), size: 14),
+                            SizedBox(width: 4),
+                            Text(
+                              'AI CO-PILOT',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     // Lighting buttons

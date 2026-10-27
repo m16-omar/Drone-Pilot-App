@@ -72,11 +72,18 @@ class _Drone3DPreviewCardState extends State<Drone3DPreviewCard>
   Widget build(BuildContext context) {
     final rollRad = widget.telemetry.rollDeg * math.pi / 180.0;
     final pitchRad = widget.telemetry.pitchDeg * math.pi / 180.0;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final cardBorder = isDark
+        ? const Color(0xFF0284C7).withValues(alpha: 0.4)
+        : const Color(0xFF0284C7).withValues(alpha: 0.25);
+    final titleColor = isDark ? Colors.white : const Color(0xFF0F172A);
 
     return TactileCard(
       padding: EdgeInsets.zero,
-      color: const Color(0xFF0F172A),
-      borderColor: const Color(0xFF0284C7).withValues(alpha: 0.4),
+      color: cardBg,
+      borderColor: cardBorder,
       onTap: () => context.push('/flight-3d'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,17 +94,17 @@ class _Drone3DPreviewCardState extends State<Drone3DPreviewCard>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.view_in_ar, color: Color(0xFF38BDF8), size: 20),
-                    SizedBox(width: 8),
+                    const Icon(Icons.view_in_ar, color: Color(0xFF38BDF8), size: 20),
+                    const SizedBox(width: 8),
                     Text(
                       '3D DRONE AVIONICS VIEW',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                         letterSpacing: 1.1,
-                        color: Colors.white,
+                        color: titleColor,
                       ),
                     ),
                   ],

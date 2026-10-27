@@ -111,9 +111,7 @@ class _FleetScreenState extends ConsumerState<FleetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.jetBlack,
       appBar: AppBar(
-        backgroundColor: AppColors.cockpitSlate,
         title: const Text('SERVERPOD CLOUD FLEET REGISTRY'),
         actions: [
           IconButton(
