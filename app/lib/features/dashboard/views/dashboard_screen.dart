@@ -28,9 +28,16 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             Icon(Icons.flight_takeoff, color: AppColors.avionicsBlue),
             SizedBox(width: 8),
-            Text(
-              'DRONE CONTROL PILOT',
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+            Expanded(
+              child: Text(
+                'DRONE CONTROL PILOT',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                  fontSize: 15,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
