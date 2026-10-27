@@ -278,57 +278,73 @@ class _Flight3DScreenState extends ConsumerState<Flight3DScreen>
                 ),
                 const SizedBox(height: 10),
 
-                // Camera Mode & Environment Quick Switcher
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Camera buttons
-                    GlassHudPanel(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                      borderRadius: 99,
-                      child: Row(
-                        children: [
-                          _buildModeChip('CHASE', CameraMode.chase),
-                          _buildModeChip('FPV', CameraMode.fpv),
-                          _buildModeChip('ORBIT', CameraMode.orbit),
-                        ],
-                      ),
-                    ),
-                    // AI Assistant Co-pilot Button
-                    GlassHudPanel(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      borderRadius: 99,
-                      child: InkWell(
-                        onTap: () => AiAssistantSheet.show(context),
-                        child: const Row(
+                // Camera Mode & Environment Quick Switcher (Responsive HUD)
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(Icons.auto_awesome, color: Color(0xFF38BDF8), size: 14),
-                            SizedBox(width: 4),
-                            Text(
-                              'AI CO-PILOT',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            // Camera buttons
+                            GlassHudPanel(
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                              borderRadius: 99,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildModeChip('CHASE', CameraMode.chase),
+                                  _buildModeChip('FPV', CameraMode.fpv),
+                                  _buildModeChip('ORBIT', CameraMode.orbit),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            // AI Assistant Co-pilot Button
+                            GlassHudPanel(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                              borderRadius: 99,
+                              child: InkWell(
+                                onTap: () => AiAssistantSheet.show(context),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.auto_awesome, color: Color(0xFF38BDF8), size: 13),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'AI CO-PILOT',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            // Lighting buttons
+                            GlassHudPanel(
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                              borderRadius: 99,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildLightingChip(Icons.wb_sunny, FlightTimeOfDay.day),
+                                  _buildLightingChip(Icons.wb_twilight, FlightTimeOfDay.sunset),
+                                  _buildLightingChip(Icons.nights_stay, FlightTimeOfDay.night),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    // Lighting buttons
-                    GlassHudPanel(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                      borderRadius: 99,
-                      child: Row(
-                        children: [
-                          _buildLightingChip(Icons.wb_sunny, FlightTimeOfDay.day),
-                          _buildLightingChip(Icons.wb_twilight, FlightTimeOfDay.sunset),
-                          _buildLightingChip(Icons.nights_stay, FlightTimeOfDay.night),
-                        ],
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -439,8 +455,8 @@ class _Flight3DScreenState extends ConsumerState<Flight3DScreen>
     return GestureDetector(
       onTap: () => setState(() => _cameraMode = mode),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        margin: const EdgeInsets.symmetric(horizontal: 1),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
         decoration: BoxDecoration(
           color: active ? AppColors.avionicsBlue : Colors.transparent,
           borderRadius: BorderRadius.circular(99),
@@ -448,7 +464,7 @@ class _Flight3DScreenState extends ConsumerState<Flight3DScreen>
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: FontWeight.w800,
             color: active ? Colors.white : AppColors.textMuted,
           ),
@@ -462,15 +478,15 @@ class _Flight3DScreenState extends ConsumerState<Flight3DScreen>
     return GestureDetector(
       onTap: () => setState(() => _timeOfDay = time),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.all(6),
+        margin: const EdgeInsets.symmetric(horizontal: 1),
+        padding: const EdgeInsets.all(4.5),
         decoration: BoxDecoration(
           color: active ? const Color(0xFFF59E0B) : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: Icon(
           icon,
-          size: 14,
+          size: 13,
           color: active ? Colors.white : AppColors.textMuted,
         ),
       ),
