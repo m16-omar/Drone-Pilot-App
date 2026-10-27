@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/tactile_components.dart';
 import '../../drone_connection/services/udp_drone_link.dart';
+import '../../flight_3d/widgets/drone_3d_preview_card.dart';
 import '../../telemetry/models/drone_telemetry.dart';
 import '../../telemetry/providers/drone_providers.dart';
 
@@ -62,12 +64,71 @@ class DashboardScreen extends ConsumerWidget {
         children: [
           _buildConnectionStatusBar(context, linkState, telemetry),
           const SizedBox(height: 16),
+          Drone3DPreviewCard(
+            telemetry: telemetry,
+            isArmed: telemetry.isArmed,
+          ),
+          const SizedBox(height: 16),
+          _build3DLaunchButton(context),
+          const SizedBox(height: 16),
           _buildPrimaryInstruments(telemetry),
           const SizedBox(height: 16),
           _buildAttitudeCard(telemetry),
           const SizedBox(height: 16),
           _buildQuickActionButtons(context, ref, telemetry, linkState),
         ],
+      ),
+    );
+  }
+
+  Widget _build3DLaunchButton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2563EB), Color(0xFF0284C7), Color(0xFF0D9488)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x440284C7),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => context.push('/flight-3d'),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.sports_esports, color: Colors.white, size: 22),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'ENTER 3D FLIGHT ARENA',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                      letterSpacing: 0.9,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                SizedBox(width: 6),
+                Icon(Icons.arrow_forward_ios, color: Colors.white, size: 13),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -104,13 +165,10 @@ class DashboardScreen extends ConsumerWidget {
         break;
     }
 
-    return Container(
+    return TactileCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.cockpitSlate,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: statusColor.withValues(alpha: 0.5)),
-      ),
+      color: AppColors.cockpitSlate,
+      borderColor: statusColor.withValues(alpha: 0.5),
       child: Row(
         children: [
           Icon(statusIcon, color: statusColor, size: 24),
